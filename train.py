@@ -10,6 +10,7 @@ CONTEXT_LENGTH = 2048
 MODEL_NAME = "unsloth/Qwen3-1.7B-Base"
 OUTPUT_DIR="./qwen3-1.7b-finetuned-test"
 HF_TOKEN=os.getenv("HF_TOKEN")
+HF_USERNAME="habanoz"
 
 print("HF_TOKEN", HF_TOKEN)
 
@@ -89,15 +90,15 @@ def main():
     model.save_pretrained("lora_model")  # Local saving
     tokenizer.save_pretrained("lora_model")
 
-    model.push_to_hub("your_name/lora_model", token = HF_TOKEN) # Online saving
-    tokenizer.push_to_hub("lora_model", token = HF_TOKEN) # Online saving
+    model.push_to_hub("lora_model") # Online saving
+    tokenizer.push_to_hub(f"lora_model") # Online saving
 
     model.save_pretrained_merged("model", tokenizer, save_method = "merged_16bit",)
-    model.push_to_hub_merged("model", tokenizer, save_method = "merged_16bit", token = HF_TOKEN)
+    model.push_to_hub_merged("model", tokenizer, save_method = "merged_16bit")
 
     quantization_methods = ["q4_k_m", "q8_0", "q5_k_m",],
     model.save_pretrained_gguf("model", tokenizer, quantization_method = quantization_methods)
-    model.push_to_hub_gguf("model", tokenizer, quantization_method = quantization_methods, token = HF_TOKEN)
+    model.push_to_hub_gguf("model", tokenizer, quantization_method = quantization_methods)
 
     print("Model saved locally and pushed to Hugging Face hub.")   
     
