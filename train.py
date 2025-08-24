@@ -16,6 +16,12 @@ OUT_ROOT=os.getenv("OUT_ROOT")
 print("HF_USER", HF_USER)
 print("OUT_ROOT", OUT_ROOT)
 
+def try_func(func):
+    try:
+        func()
+    except Exception as e:
+        print("Error during function execution:", e)
+
 def main():
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name = MODEL_NAME,
@@ -88,18 +94,18 @@ def main():
     print("Trainer completed:")   
     print(trainer_stats)
 
-    model.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model")  # Local saving
-    tokenizer.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model")
+    try_func(lambda x: model.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model") )
+    try_func(lambda x: tokenizer.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model") )
 
-    model.push_to_hub(f"{OUTPUT_DIR}-lora_model") # Online saving
-    tokenizer.push_to_hub(f"{HF_USER}/{OUTPUT_DIR}-lora_model") # Online saving
+    try_func(lambda x: model.push_to_hub(f"{OUTPUT_DIR}-lora_model") )
+    try_func(lambda x: tokenizer.push_to_hub(f"{HF_USER}/{OUTPUT_DIR}-lora_model") )
 
-    model.save_pretrained_merged(f"{OUT_ROOT}/{OUTPUT_DIR}/merged_model", tokenizer, save_method = "merged_16bit",)
-    model.push_to_hub_merged(f"{HF_USER}/{OUTPUT_DIR}-merged_model", tokenizer, save_method = "merged_16bit")
+    try_func(lambda x: model.save_pretrained_merged(f"{OUT_ROOT}/{OUTPUT_DIR}/merged_model", tokenizer, save_method = "merged_16bit",))
+    try_func(lambda x: model.push_to_hub_merged(f"{HF_USER}/{OUTPUT_DIR}-merged_model", tokenizer, save_method = "merged_16bit"))
 
     quantization_methods = ["q4_k_m", "q8_0", "q5_k_m",],
-    model.save_pretrained_gguf(f"{OUT_ROOT}/{OUTPUT_DIR}/model_gguf", tokenizer, quantization_method = quantization_methods)
-    model.push_to_hub_gguf(f"{HF_USER}/{OUTPUT_DIR}-model_gguf", tokenizer, quantization_method = quantization_methods)
+    try_func(lambda x: model.save_pretrained_gguf(f"{OUT_ROOT}/{OUTPUT_DIR}/model_gguf", tokenizer, quantization_method = quantization_methods) )
+    try_func(lambda x: model.push_to_hub_gguf(f"{HF_USER}/{OUTPUT_DIR}-model_gguf", tokenizer, quantization_method = quantization_methods) )
 
     print("Model saved locally and pushed to Hugging Face hub.")   
     
