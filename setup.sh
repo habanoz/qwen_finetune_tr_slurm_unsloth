@@ -4,7 +4,7 @@ echo "Setting up environment for Qwen Finetunning..."
 
 # Create environment
 source $HOME/miniconda3/etc/profile.d/conda.sh
-conda create -n llm-training-unsloth python=3.9 -y
+conda create -n llm-training-unsloth python=3.10 -y
 conda activate llm-training-unsloth
 
 pip install unsloth
