@@ -31,6 +31,7 @@ echo "CPUs per task: $SLURM_CPUS_PER_TASK"
 echo "Tasks per node: $SLURM_NTASKS_PER_NODE"
 echo "W&B API key: $WANDB_API_KEY"
 echo "HF TOKEN: $HF_TOKEN"
+echo "OUTPUT ROOT: $OUT_ROOT"
 
 # Distributed setup
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
