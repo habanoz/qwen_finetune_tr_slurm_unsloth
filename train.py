@@ -68,7 +68,7 @@ def main():
         train_dataset = dataset,
         eval_dataset = None, # Can set up evaluation!
         args = SFTConfig(
-            output_dir = OUTPUT_DIR,
+            output_dir = f"{HF_USER}/{OUTPUT_DIR}",
             dataset_text_field = "text",
             per_device_train_batch_size = 2,
             gradient_accumulation_steps = 4, # Use GA to mimic batch size!
@@ -94,22 +94,22 @@ def main():
     )
 
     trainer_stats = trainer.train()
-    with open(f"{OUT_ROOT}/{OUTPUT_DIR}/trainer_stats.json", "w") as f:
+    with open(f"{HF_USER}/{OUTPUT_DIR}/trainer_stats.json", "w") as f:
         json.dump(trainer_stats, f)
         
-    print("Trainer completed:")   
+    print("Trainer completed:")
 
-    try_func(lambda x: model.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model") )
-    try_func(lambda x: tokenizer.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model") )
-
-    try_func(lambda x: model.push_to_hub(f"{OUTPUT_DIR}-lora_model") )
+    try_func(lambda x: model.save_pretrained(f"{HF_USER}/{OUTPUT_DIR}-lora_model") )
+    try_func(lambda x: tokenizer.save_pretrained(f"{HF_USER}/{OUTPUT_DIR}-lora_model") )
+    
+    try_func(lambda x: model.push_to_hub(f"{HF_USER}/{OUTPUT_DIR}-lora_model") )
     try_func(lambda x: tokenizer.push_to_hub(f"{HF_USER}/{OUTPUT_DIR}-lora_model") )
 
-    try_func(lambda x: model.save_pretrained_merged(f"{OUT_ROOT}/{OUTPUT_DIR}/merged_model", tokenizer, save_method = "merged_16bit",))
+    try_func(lambda x: model.save_pretrained_merged(f"{HF_USER}/{OUTPUT_DIR}-merged_model", tokenizer, save_method = "merged_16bit",))
     try_func(lambda x: model.push_to_hub_merged(f"{HF_USER}/{OUTPUT_DIR}-merged_model", tokenizer, save_method = "merged_16bit"))
 
     quantization_methods = ["q4_k_m", "q8_0", "q5_k_m"]
-    try_func(lambda x: model.save_pretrained_gguf(f"{OUT_ROOT}/{OUTPUT_DIR}/model_gguf", tokenizer, quantization_method = quantization_methods) )
+    try_func(lambda x: model.save_pretrained_gguf(f"{HF_USER}/{OUTPUT_DIR}-model_gguf", tokenizer, quantization_method = quantization_methods) )
     try_func(lambda x: model.push_to_hub_gguf(f"{HF_USER}/{OUTPUT_DIR}-model_gguf", tokenizer, quantization_method = quantization_methods) )
 
     print("Model saved locally and pushed to Hugging Face hub.")   
