@@ -6,6 +6,7 @@ from unsloth.chat_templates import train_on_responses_only
 from datasets import load_dataset
 import json
 import os
+import traceback
 
 CONTEXT_LENGTH = 2048
 MODEL_NAME = "unsloth/Qwen3-1.7B-Base"
@@ -22,6 +23,7 @@ def try_func(func):
         func(None)
     except Exception as e:
         print("Error during function execution:", e)
+        traceback.print_exc()
 
 def main():
     model, tokenizer = FastLanguageModel.from_pretrained(
@@ -106,7 +108,7 @@ def main():
     try_func(lambda x: model.save_pretrained_merged(f"{OUT_ROOT}/{OUTPUT_DIR}/merged_model", tokenizer, save_method = "merged_16bit",))
     try_func(lambda x: model.push_to_hub_merged(f"{HF_USER}/{OUTPUT_DIR}-merged_model", tokenizer, save_method = "merged_16bit"))
 
-    quantization_methods = ["q4_k_m", "q8_0", "q5_k_m",],
+    quantization_methods = ["q4_k_m", "q8_0", "q5_k_m"]
     try_func(lambda x: model.save_pretrained_gguf(f"{OUT_ROOT}/{OUTPUT_DIR}/model_gguf", tokenizer, quantization_method = quantization_methods) )
     try_func(lambda x: model.push_to_hub_gguf(f"{HF_USER}/{OUTPUT_DIR}-model_gguf", tokenizer, quantization_method = quantization_methods) )
 
