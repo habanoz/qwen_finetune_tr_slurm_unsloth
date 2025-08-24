@@ -7,6 +7,11 @@ export GPUS=1
 export CPUS=16 
 export NODES=1 
 
+if [ -z "$HF_USER" ]; then
+    echo "Error: HF_USER is not set."
+    exit 1
+fi
+
 if [ -z "$OUT_ROOT" ]; then
     echo "Error: OUT_ROOT is not set."
     exit 1
@@ -33,5 +38,5 @@ sbatch \
     --time=12:00:00 \
     --output=logs/qwen_train_%j.out \
     --error=logs/qwen_train_%j.err \
-    --export=OUT_ROOT,HF_TOKEN,WANDB_API_KEY \
+    --export=HF_USER,OUT_ROOT,HF_TOKEN,WANDB_API_KEY \
     train.sh
