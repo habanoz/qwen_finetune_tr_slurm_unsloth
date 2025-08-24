@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Setting up environment for Qwen Finetunning..."
 
 # Create environment
