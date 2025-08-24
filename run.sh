@@ -28,6 +28,6 @@ sbatch \
     --time=12:00:00 \
     --output=logs/qwen_train_%j.out \
     --error=logs/qwen_train_%j.err \
-    --export=WANDB_API_KEY \
+    --export=HF_TOKEN \
     --export=WANDB_API_KEY \
     train.sh
