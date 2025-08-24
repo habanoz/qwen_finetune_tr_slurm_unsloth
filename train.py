@@ -8,7 +8,7 @@ import os
 
 CONTEXT_LENGTH = 2048
 MODEL_NAME = "unsloth/Qwen3-1.7B-Base"
-OUTPUT_DIR="qwen3-1.7b-finetuned-test"
+OUTPUT_DIR="qwen3-1.7b-finetuned-test-60its"
 HF_TOKEN=os.getenv("HF_TOKEN")
 print("HF_TOKEN", HF_TOKEN)
 
