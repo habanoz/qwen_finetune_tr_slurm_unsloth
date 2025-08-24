@@ -18,6 +18,15 @@ python -c "import transformers; print(f'Transformers version: {transformers.__ve
 
 echo "Environment setup complete!"
 
+echo "Installing llama.cpp for GGUF support..."
+source /opt/rh/gcc-toolset-12/enable
+git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+cmake -B build
+cmake --build build --config Release
+cd ..
+echo "llama.cpp installation complete!"
+
 # Create directory structure
 mkdir -p logs
 mkdir -p checkpoints
