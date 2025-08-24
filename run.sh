@@ -30,4 +30,4 @@ sbatch \
     --error=logs/qwen_train_%j.err \
     --export=WANDB_API_KEY \
     --export=WANDB_API_KEY \
-    python train.py
+    train.sh
