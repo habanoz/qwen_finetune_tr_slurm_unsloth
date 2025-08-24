@@ -8,10 +8,8 @@ import os
 
 CONTEXT_LENGTH = 2048
 MODEL_NAME = "unsloth/Qwen3-1.7B-Base"
-OUTPUT_DIR="./qwen3-1.7b-finetuned-test"
+OUTPUT_DIR="qwen3-1.7b-finetuned-test"
 HF_TOKEN=os.getenv("HF_TOKEN")
-HF_USERNAME="habanoz"
-
 print("HF_TOKEN", HF_TOKEN)
 
 
@@ -73,6 +71,7 @@ def main():
             lr_scheduler_type = "linear",
             seed = 3407,
             report_to = "wandb", # Use this for WandB etc
+            run_name = OUTPUT_DIR,
         ),
     )
 
@@ -87,18 +86,18 @@ def main():
     print("Trainer completed:")   
     print(trainer_stats)
 
-    model.save_pretrained("lora_model")  # Local saving
-    tokenizer.save_pretrained("lora_model")
+    model.save_pretrained(f"{OUTPUT_DIR}/lora_model")  # Local saving
+    tokenizer.save_pretrained(f"{OUTPUT_DIR}/lora_model")
 
-    model.push_to_hub("lora_model") # Online saving
-    tokenizer.push_to_hub(f"lora_model") # Online saving
+    model.push_to_hub(f"{OUTPUT_DIR}-lora_model") # Online saving
+    tokenizer.push_to_hub(f"{OUTPUT_DIR}-lora_model") # Online saving
 
-    model.save_pretrained_merged("model", tokenizer, save_method = "merged_16bit",)
-    model.push_to_hub_merged("model", tokenizer, save_method = "merged_16bit")
+    model.save_pretrained_merged(f"{OUTPUT_DIR}/merged_model", tokenizer, save_method = "merged_16bit",)
+    model.push_to_hub_merged(f"{OUTPUT_DIR}-merged_model", tokenizer, save_method = "merged_16bit")
 
     quantization_methods = ["q4_k_m", "q8_0", "q5_k_m",],
-    model.save_pretrained_gguf("model", tokenizer, quantization_method = quantization_methods)
-    model.push_to_hub_gguf("model", tokenizer, quantization_method = quantization_methods)
+    model.save_pretrained_gguf(f"{OUTPUT_DIR}/model_gguf", tokenizer, quantization_method = quantization_methods)
+    model.push_to_hub_gguf(f"{OUTPUT_DIR}-model_gguf", tokenizer, quantization_method = quantization_methods)
 
     print("Model saved locally and pushed to Hugging Face hub.")   
     
