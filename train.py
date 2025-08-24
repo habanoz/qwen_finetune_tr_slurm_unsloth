@@ -4,6 +4,7 @@ from unsloth.chat_templates import get_chat_template
 from trl import SFTTrainer, SFTConfig
 from unsloth.chat_templates import train_on_responses_only
 from datasets import load_dataset
+import json
 import os
 
 CONTEXT_LENGTH = 2048
@@ -18,7 +19,7 @@ print("OUT_ROOT", OUT_ROOT)
 
 def try_func(func):
     try:
-        func()
+        func(None)
     except Exception as e:
         print("Error during function execution:", e)
 
@@ -91,8 +92,10 @@ def main():
     )
 
     trainer_stats = trainer.train()
+    with open(f"{OUT_ROOT}/{OUTPUT_DIR}/trainer_stats.json", "w") as f:
+        json.dump(trainer_stats, f)
+        
     print("Trainer completed:")   
-    print(trainer_stats)
 
     try_func(lambda x: model.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model") )
     try_func(lambda x: tokenizer.save_pretrained(f"{OUT_ROOT}/{OUTPUT_DIR}/lora_model") )
