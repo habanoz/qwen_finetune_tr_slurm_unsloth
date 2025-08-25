@@ -11,7 +11,7 @@ import traceback
 CONTEXT_LENGTH = 8192
 MODEL_NAME = "unsloth/Qwen3-8B-Base"
 DATASET="habanoz/FineTume10k-WildChatTr6k-8192"
-OUTPUT_DIR="qwen3-8b-FineTome-WildChatTr8192-60it"
+OUTPUT_DIR="qwen3-8b-FineTome-WildChatTr8192"
 HF_TOKEN=os.getenv("HF_TOKEN")
 HF_USER=os.getenv("HF_USER")
 OUT_ROOT=os.getenv("OUT_ROOT")
@@ -77,8 +77,8 @@ def main():
             per_device_train_batch_size = 16,
             gradient_accumulation_steps = 1, # Use GA to mimic batch size!
             warmup_steps = 5,
-            # num_train_epochs = 1, # Set this for 1 full training run.
-            max_steps = 60,
+            num_train_epochs = 1, # Set this for 1 full training run.
+            # max_steps = 60,
             learning_rate = 2e-4, # Reduce to 2e-5 for long training runs
             logging_steps = 1,
             optim = "adamw_8bit",
