@@ -62,7 +62,7 @@ def main():
     dataset = load_dataset(DATASET, split = "train")
     dataset = standardize_data_formats(dataset)
     dataset = dataset.map(formatting_prompts_func, batched = True)
-    splits = dataset['train'].train_test_split(test_size=0.01, seed=3407)
+    splits = dataset.train_test_split(test_size=0.01, seed=3407)
     train_ds = splits['train']
     eval_ds = splits['test']
 
