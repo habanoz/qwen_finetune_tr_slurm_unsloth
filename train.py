@@ -8,9 +8,10 @@ import json
 import os
 import traceback
 
-CONTEXT_LENGTH = 2048
-MODEL_NAME = "unsloth/Qwen3-4B-Base"
-OUTPUT_DIR="qwen3-4b-finetuned-FineTome-100k"
+CONTEXT_LENGTH = 8192
+MODEL_NAME = "unsloth/Qwen3-8B-Base"
+DATASET="habanoz/FineTume10k-WildChatTr6k-8192"
+OUTPUT_DIR="qwen3-8b-FineTome-WildChatTr8192-60it"
 HF_TOKEN=os.getenv("HF_TOKEN")
 HF_USER=os.getenv("HF_USER")
 OUT_ROOT=os.getenv("OUT_ROOT")
@@ -58,15 +59,18 @@ def main():
         texts = [tokenizer.apply_chat_template(convo, tokenize = False, add_generation_prompt = False) for convo in convos]
         return { "text" : texts, }
 
-    dataset = load_dataset("mlabonne/FineTome-100k", split = "train")
+    dataset = load_dataset(DATASET, split = "train")
     dataset = standardize_data_formats(dataset)
     dataset = dataset.map(formatting_prompts_func, batched = True)
+    splits = dataset['train'].train_test_split(test_size=0.01, seed=3407)
+    train_ds = splits['train']
+    eval_ds = splits['test']
 
     trainer = SFTTrainer(
         model = model,
         tokenizer = tokenizer,
-        train_dataset = dataset,
-        eval_dataset = None, # Can set up evaluation!
+        train_dataset = train_ds,
+        eval_dataset = eval_ds,
         args = SFTConfig(
             output_dir = f"{HF_USER}/{OUTPUT_DIR}",
             dataset_text_field = "text",
@@ -74,7 +78,7 @@ def main():
             gradient_accumulation_steps = 1, # Use GA to mimic batch size!
             warmup_steps = 5,
             # num_train_epochs = 1, # Set this for 1 full training run.
-            max_steps = 1250,
+            max_steps = 60,
             learning_rate = 2e-4, # Reduce to 2e-5 for long training runs
             logging_steps = 1,
             optim = "adamw_8bit",
