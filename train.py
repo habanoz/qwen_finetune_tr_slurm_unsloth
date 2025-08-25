@@ -9,8 +9,8 @@ import os
 import traceback
 
 CONTEXT_LENGTH = 2048
-MODEL_NAME = "unsloth/Qwen3-1.7B-Base"
-OUTPUT_DIR="qwen3-1.7b-finetuned-test-60its"
+MODEL_NAME = "unsloth/Qwen3-4B-Base"
+OUTPUT_DIR="qwen3-4b-finetuned-FineTome-100k"
 HF_TOKEN=os.getenv("HF_TOKEN")
 HF_USER=os.getenv("HF_USER")
 OUT_ROOT=os.getenv("OUT_ROOT")
@@ -70,8 +70,8 @@ def main():
         args = SFTConfig(
             output_dir = f"{HF_USER}/{OUTPUT_DIR}",
             dataset_text_field = "text",
-            per_device_train_batch_size = 2,
-            gradient_accumulation_steps = 4, # Use GA to mimic batch size!
+            per_device_train_batch_size = 16,
+            gradient_accumulation_steps = 1, # Use GA to mimic batch size!
             warmup_steps = 5,
             # num_train_epochs = 1, # Set this for 1 full training run.
             max_steps = 60,
@@ -79,19 +79,22 @@ def main():
             logging_steps = 1,
             optim = "adamw_8bit",
             weight_decay = 0.01,
-            lr_scheduler_type = "linear",
+            lr_scheduler_type = "cosine", #"linear",
             seed = 3407,
             report_to = "wandb", # Use this for WandB etc
             run_name = OUTPUT_DIR,
         ),
     )
 
-
     trainer = train_on_responses_only(
         trainer,
         instruction_part = "<|im_start|>user\n",
         response_part = "<|im_start|>assistant\n",
     )
+    
+    for i in range(3):
+        decoded_text = tokenizer.decode([tokenizer.pad_token_id if x == -100 else x for x in trainer.train_dataset[i]["labels"]]).replace(tokenizer.pad_token, "#")
+        print(f"Sample {i}:\n{decoded_text}\n{'-'*40}")
 
     trainer_stats = trainer.train()
     with open(f"{HF_USER}/{OUTPUT_DIR}/trainer_stats.json", "w") as f:
