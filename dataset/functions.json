@@ -1,0 +1,140 @@
+[
+    {
+        "name": "search_web",
+        "description": "Search the web for the given query. Returns an array of result strings (title + URL).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query text"
+                }
+            },
+            "required": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "search_flight",
+        "description": "Search for round-trip flights for the given dates and number of passengers. Returns an array of flight objects (airline, flightNumber, departureDateTime, arrivalDateTime, duration, stops, price {amount, currency}, bookingUrl). Dates should be ISO 8601 (YYYY-MM-DD).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "departureDate": {
+                    "type": "string",
+                    "description": "Outbound departure date in YYYY-MM-DD (ISO 8601).",
+                    "format": "date"
+                },
+                "returnDate": {
+                    "type": "string",
+                    "description": "Return date in YYYY-MM-DD (ISO 8601).",
+                    "format": "date"
+                },
+                "passengers": {
+                    "type": "integer",
+                    "description": "Number of passengers (integer >= 1).",
+                    "minimum": 1
+                }
+            },
+            "required": [
+                "departureDate",
+                "returnDate",
+                "passengers"
+            ]
+        }
+    },
+    {
+        "name": "search_hotel",
+        "description": "Search for hotels for the given check-in/check-out dates and number of guests. Returns an array of hotel objects (name, address, rating, availableRooms, price {amount, currency}, bookingUrl). Dates should be ISO 8601 (YYYY-MM-DD).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "checkInDate": {
+                    "type": "string",
+                    "description": "Check-in date in YYYY-MM-DD (ISO 8601).",
+                    "format": "date"
+                },
+                "checkOutDate": {
+                    "type": "string",
+                    "description": "Check-out date in YYYY-MM-DD (ISO 8601).",
+                    "format": "date"
+                },
+                "guests": {
+                    "type": "integer",
+                    "description": "Number of guests (integer >= 1).",
+                    "minimum": 1
+                }
+            },
+            "required": [
+                "checkInDate",
+                "checkOutDate",
+                "guests"
+            ]
+        }
+    },
+    {
+        "name": "list_attractions",
+        "description": "List top attractions for the given city. Returns an array of attraction objects (name, address, shortDescription, rating, category).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "description": "City name or query (e.g., 'Paris, France' or 'Seattle, WA')."
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of attractions to return.",
+                    "minimum": 1,
+                    "default": 10
+                }
+            },
+            "required": [
+                "city"
+            ]
+        }
+    },
+    {
+        "name": "search_youtube",
+        "description": "Search YouTube for videos related to the query and transcribe them to text. Primarily can be used to find travel blog videos and extract travel details in text. Returns an array of video objects: { title, url, transcript (string) }.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query text (e.g., 'London in 5 days', 'weekend Paris tour')."
+                }
+            },
+            "required": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "list_events",
+        "description": "List events in a city between startDate and endDate that may affect travel planning (e.g., strikes, bank holidays, festivals, carnivals). Returns an array of event objects: { id, name, type, description, startDateTime (ISO 8601), endDateTime (ISO 8601), allDay (boolean), location, timezone, impact (low|medium|high), isPublicHoliday (boolean), sourceUrl }.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "description": "City name or query (e.g., 'Paris, France' or 'Seattle, WA')."
+                },
+                "startDate": {
+                    "type": "string",
+                    "description": "Start of the date range (inclusive) in YYYY-MM-DD (ISO 8601)."
+                },
+                "endDate": {
+                    "type": "string",
+                    "description": "End of the date range (inclusive) in YYYY-MM-DD (ISO 8601)."
+                }
+            },
+            "required": [
+                "city",
+                "startDate",
+                "endDate"
+            ]
+        }
+    }
+]
