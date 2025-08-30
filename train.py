@@ -75,11 +75,12 @@ def main():
             output_dir = f"{HF_USER}/{OUTPUT_DIR}",
             dataset_text_field = "text",
             per_device_train_batch_size = 16,
+            per_device_eval_batch_size = 16,
             gradient_accumulation_steps = 1, # Use GA to mimic batch size!
             warmup_steps = 5,
-            num_train_epochs = 1, # Set this for 1 full training run.
+            num_train_epochs = 3, # Set this for 1 full training run.
             # max_steps = 60,
-            learning_rate = 2e-4, # Reduce to 2e-5 for long training runs
+            learning_rate = 1e-4, # 2e-4. Reduce to 2e-5 for long training runs
             logging_steps = 1,
             eval_steps=100, eval_strategy="steps",
             optim = "adamw_8bit",
