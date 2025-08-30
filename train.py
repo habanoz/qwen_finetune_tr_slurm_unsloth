@@ -10,14 +10,13 @@ import traceback
 
 CONTEXT_LENGTH = 8192
 MODEL_NAME = "unsloth/Qwen3-8B-Base"
-DATASET="habanoz/FineTume10k-WildChatTr6k-8192"
-OUTPUT_DIR="qwen3-8b-FineTome-WildChatTr8192"
+DATASET="habanoz/finetune_mix_v1"
+OUTPUT_DIR="qwen3-8b-finetune_mix_v1"
 HF_TOKEN=os.getenv("HF_TOKEN")
 HF_USER=os.getenv("HF_USER")
-OUT_ROOT=os.getenv("OUT_ROOT")
 
 print("HF_USER", HF_USER)
-print("OUT_ROOT", OUT_ROOT)
+
 
 def try_func(func):
     try:
@@ -54,14 +53,15 @@ def main():
         chat_template = "qwen3-instruct",
     )
     
-    def formatting_prompts_func(examples):
-        convos = examples["conversations"]
-        texts = [tokenizer.apply_chat_template(convo, tokenize = False, add_generation_prompt = False) for convo in convos]
-        return { "text" : texts, }
+    def formatting_prompts_func(example):
+        convos = [msg|{'tool_calls':json.loads(msg['tool_calls']) if msg['tool_calls'] else None } for msg in example["conversations"]]
+        tools = json.loads(example["tools"])
+        text = tokenizer.apply_chat_template(convos, tokenize = False, add_generation_prompt = False, tools=tools)
+        return { "text" : text }
 
     dataset = load_dataset(DATASET, split = "train")
     dataset = standardize_data_formats(dataset)
-    dataset = dataset.map(formatting_prompts_func, batched = True)
+    dataset = dataset.map(formatting_prompts_func, batched = False)
     splits = dataset.train_test_split(test_size=0.01, seed=3407)
     train_ds = splits['train']
     eval_ds = splits['test']
@@ -81,6 +81,7 @@ def main():
             # max_steps = 60,
             learning_rate = 2e-4, # Reduce to 2e-5 for long training runs
             logging_steps = 1,
+            eval_steps=100, eval_strategy="steps",
             optim = "adamw_8bit",
             weight_decay = 0.01,
             lr_scheduler_type = "cosine", #"linear",

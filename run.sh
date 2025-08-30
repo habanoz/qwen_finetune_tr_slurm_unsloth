@@ -17,11 +17,6 @@ if [ -z "$HF_HOME" ]; then
     exit 1
 fi
 
-if [ -z "$OUT_ROOT" ]; then
-    echo "Error: OUT_ROOT is not set."
-    exit 1
-fi
-
 if [ -z "$HF_TOKEN" ]; then
     echo "Error: HF_TOKEN is not set."
     exit 1
@@ -43,5 +38,5 @@ sbatch \
     --time=12:00:00 \
     --output=logs/qwen_train_%j.out \
     --error=logs/qwen_train_%j.err \
-    --export=HF_USER,HF_HOME,OUT_ROOT,HF_TOKEN,WANDB_API_KEY \
+    --export=HF_USER,HF_HOME,HF_TOKEN,WANDB_API_KEY \
     train.sh
