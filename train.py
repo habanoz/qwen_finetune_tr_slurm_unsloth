@@ -11,7 +11,7 @@ import traceback
 CONTEXT_LENGTH = 8192
 MODEL_NAME = "unsloth/Qwen3-8B-Base"
 DATASET="habanoz/finetune_mix_v1"
-OUTPUT_DIR="qwen3-8b-finetune_mix_v1"
+OUTPUT_DIR="qwen3-8b-finetune_mix_v1.1"
 HF_TOKEN=os.getenv("HF_TOKEN")
 HF_USER=os.getenv("HF_USER")
 
