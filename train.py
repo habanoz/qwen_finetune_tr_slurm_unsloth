@@ -11,7 +11,7 @@ import traceback
 CONTEXT_LENGTH = 8192
 MODEL_NAME = "unsloth/Qwen3-8B-Base"
 DATASET="habanoz/finetune_mix_v1"
-OUTPUT_DIR="qwen3-8b-finetune_mix_v1.3"
+OUTPUT_DIR="qwen3-8b-finetune_mix_v1.0.1"
 HF_TOKEN=os.getenv("HF_TOKEN")
 HF_USER=os.getenv("HF_USER")
 
@@ -37,14 +37,14 @@ def main():
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r = 64,           # Choose any number > 0! Suggested 8, 16, 32, 64, 128
+        r = 32,           # Choose any number > 0! Suggested 8, 16, 32, 64, 128
         target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj",],
-        lora_alpha = 64,  # Best to choose alpha = rank or rank*2
+        lora_alpha = 32,  # Best to choose alpha = rank or rank*2
         lora_dropout = 0, # Supports any, but = 0 is optimized
         bias = "none",    # Supports any, but = "none" is optimized
         use_gradient_checkpointing = "unsloth", # True or "unsloth" for very long context
         random_state = 3407,
-        use_rslora = True,   # We support rank stabilized LoRA
+        use_rslora = False,   # We support rank stabilized LoRA
         loftq_config = None,  # And LoftQ
     )
 
