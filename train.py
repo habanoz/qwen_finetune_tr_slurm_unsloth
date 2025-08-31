@@ -11,7 +11,7 @@ import traceback
 CONTEXT_LENGTH = 8192
 MODEL_NAME = "unsloth/Qwen3-8B-Base"
 DATASET="habanoz/finetune_mix_v1"
-OUTPUT_DIR="qwen3-8b-finetune_mix_v1.1"
+OUTPUT_DIR="qwen3-8b-finetune_mix_v1.3"
 HF_TOKEN=os.getenv("HF_TOKEN")
 HF_USER=os.getenv("HF_USER")
 
@@ -37,14 +37,14 @@ def main():
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r = 32,           # Choose any number > 0! Suggested 8, 16, 32, 64, 128
+        r = 64,           # Choose any number > 0! Suggested 8, 16, 32, 64, 128
         target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj",],
-        lora_alpha = 32,  # Best to choose alpha = rank or rank*2
+        lora_alpha = 64,  # Best to choose alpha = rank or rank*2
         lora_dropout = 0, # Supports any, but = 0 is optimized
         bias = "none",    # Supports any, but = "none" is optimized
         use_gradient_checkpointing = "unsloth", # True or "unsloth" for very long context
         random_state = 3407,
-        use_rslora = False,   # We support rank stabilized LoRA
+        use_rslora = True,   # We support rank stabilized LoRA
         loftq_config = None,  # And LoftQ
     )
 
@@ -62,7 +62,7 @@ def main():
     dataset = load_dataset(DATASET, split = "train")
     #dataset = standardize_data_formats(dataset)
     dataset = dataset.map(formatting_prompts_func, batched = False)
-    splits = dataset.train_test_split(test_size=0.01, seed=3407)
+    splits = dataset.train_test_split(test_size=0.01, seed=3407, shuffle=True) # shuffle is enabled by default, make it explicit
     train_ds = splits['train']
     eval_ds = splits['test']
 
@@ -77,12 +77,14 @@ def main():
             per_device_train_batch_size = 16,
             per_device_eval_batch_size = 16,
             gradient_accumulation_steps = 1, # Use GA to mimic batch size!
-            warmup_steps = 5,
+            warmup_steps = 50,
             num_train_epochs = 3, # Set this for 1 full training run.
             # max_steps = 60,
-            learning_rate = 1e-4, # 2e-4. Reduce to 2e-5 for long training runs
+            learning_rate = 2e-4, # 2e-4. Reduce to 2e-5 for long training runs
             logging_steps = 1,
             eval_steps=100, eval_strategy="steps",
+            save_steps=100, save_strategy="steps",
+            save_total_limit=2, load_best_model_at_end=True,
             optim = "adamw_8bit",
             weight_decay = 0.01,
             lr_scheduler_type = "cosine", #"linear",
